@@ -1,4 +1,4 @@
-6# Multi-instance_Conditional_Autoencoder
+### Multi-instance_Conditional_Autoencoder
 In this repository You can find our code which impelments Multi-instance Conditional Autoencoder appraoch, descird in the paper:
 
 *Multi-instance Conditional Autoencoder: a data driven compression model for strongly correlated datasets*
