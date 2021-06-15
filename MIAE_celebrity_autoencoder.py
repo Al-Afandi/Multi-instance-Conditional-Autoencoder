@@ -1,12 +1,8 @@
 import torch
-import torchvision
 from torch import nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
-from torchvision import transforms
-from torchvision.utils import save_image
-from torchvision.datasets import MNIST
 import numpy as np
 import pickle 
 import random
@@ -163,13 +159,8 @@ for k in range(repeat):
                                  lr=learning_rate,
                                  weight_decay=1e-5)
 
-    epoch_index= train_loss_log.argmin()
-
-
-    if epoch_index !=0:
-        model.load_state_dict(torch.load('./sublime_autoencoder'))   
         
-    for epoch in range(epoch_index,num_epochs):
+    for epoch in range(num_epochs):
         epoch_loss = 0
         for data in train_loader:
             auds = data.float()
@@ -187,8 +178,6 @@ for k in range(repeat):
 
         # ===================log========================
         train_loss_log[epoch] = epoch_loss/len(train_loader) 
-        
-        torch.save(model.state_dict(),'./sublime_autoencoder')
                 
         test_loss = 0          
         for data in test_loader:

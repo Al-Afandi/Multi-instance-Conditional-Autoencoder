@@ -1,12 +1,8 @@
 import torch
-import torchvision
 from torch import nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
-from torchvision import transforms
-from torchvision.utils import save_image
-from torchvision.datasets import MNIST
 import numpy as np
 import pickle 
 import random
@@ -180,9 +176,7 @@ for k in range(repeat):
 
         # ===================log========================
         train_loss_log[epoch] = epoch_loss/len(train_loader) 
-        
-        torch.save(model.state_dict(),'./baseline_autoencoder')
-                
+     
         test_loss = 0          
         for data in test_loader:
             auds = data.float()
