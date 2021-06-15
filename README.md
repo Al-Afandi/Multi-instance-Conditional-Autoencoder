@@ -11,7 +11,7 @@ The 2021 International Symposium on Broadband Multimedia Systems and Broadcastin
 To run our code You need to install Python and PyTorch.
 
 ### Running our code
-The repository has  many scripts implenting Multi-instance Conditional Autoencoder over two images datasets (mnist, cifar10) and two audio datasets (celebrity and Javanese). 
+The repository has many scripts implanting Multi-Instance Conditional Autoencoder over two images datasets (mnist, cifar10) and two audio datasets (celebrity and Javanese). Our approach and the baseline are separated with different codes. To run the codes which encode the audio datasets, you have to download the two datasets and put them in a different directory with the name data. The metadata files contain the paths for the audio files.   
 
 ### Approach illustration
 The figure illustrates Multi-instance autoencoder where one encoder compresses a batch of files together producing a concise latent representation. Although the three decoders receive the same data, each input can be reconstructed from its own decoder.
