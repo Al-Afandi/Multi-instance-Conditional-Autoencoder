@@ -1,13 +1,19 @@
 import torch
+import torchvision
 from torch import nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
+from torchvision import transforms
+from torchvision.utils import save_image
+from torchvision.datasets import MNIST
 import numpy as np
-import pickle as p
+import pickle 
 import random
-from scipy.io import wavfile
-import scipy.signal as sps
+import matplotlib.pyplot as plt
+import os 
+import soundfile as sf
+import librosa
 
 num_epochs = 20
 
@@ -29,14 +35,16 @@ length = 4
 
 stride = 4
 
-metadata = np.array(p.load(open( "data/celebrity_metadata_2", "rb" )))
+metadata = np.array(p.load(open( "celebrity_metadata", "rb" )))
 
 train_ind = int(len(metadata)*0.85)
 
 metatrain = metadata[:train_ind]
 metatest  = metadata[train_ind:]
 
-
+if not os.path.exists('./logs/audio/records'):
+    os.makedirs('./logs/audio/records')
+    
 class TrainingDataset(Dataset):
     def __init__(self,metadata,fs,length):
         self.DS = metadata
@@ -142,48 +150,58 @@ class autoencoder(nn.Module):
 
 
 
-   
-model = autoencoder(de_num,de_num,cond_ch,complexity).cuda()
-criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.params, 
-                             lr=learning_rate,
-                             weight_decay=1e-5)
+train_loss_log = [[] for i in range(repeat)]
+test_loss_log = [[] for i in range(repeat)]
 
-    
-for epoch in range(num_epochs):
-    epoch_loss = 0
-    for data in train_loader:
-        auds = data.float()
-        auds = Variable(auds).cuda()
-        # ===================forward=====================
-        output = model(auds)
-        loss = 0
-        for i in range(model.de_num):
-            loss+= criterion(output[i],auds[:,i:i+1,:]) 
-        # ===================backward====================
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        epoch_loss += loss.item()/model.de_num
+for k in range(repeat):   
 
-    # ===================log========================
-    train_loss_log[epoch] = epoch_loss/len(train_loader) 
-    
-    torch.save(model.state_dict(),'./baseline_autoencoder')
-            
-    test_loss = 0          
-    for data in test_loader:
-        auds = data.float()
-        auds = Variable(auds).cuda()
-        # ===================forward=====================
-        output = model(auds)
-        loss = 0
-        for i in range(model.de_num):
-            loss+= criterion(output[i],auds[:,i:i+1,:]) 
-        test_loss+= loss.item()/model.de_num
+    model = autoencoder(de_num,de_num,cond_ch,complexity).cuda()
+    criterion = nn.MSELoss()
+    optimizer = torch.optim.Adam(model.params, 
+                                 lr=learning_rate,
+                                 weight_decay=1e-5)
 
-    test_loss_log[epoch] = test_loss/len(test_loader)          
- 
-     
-    p.dump(test_loss_log,open('logs/celebrity/baseline_test_loss_log_2','wb'))
-    p.dump(train_loss_log,open('logs/celebrity/baseline_train_loss_log_2','wb'))
+        
+    for epoch in range(num_epochs):
+        epoch_loss = 0
+        for data in train_loader:
+            auds = data.float()
+            auds = Variable(auds).cuda()
+            # ===================forward=====================
+            output = model(auds)
+            loss = 0
+            for i in range(model.de_num):
+                loss+= criterion(output[i],auds[:,i:i+1,:]) 
+            # ===================backward====================
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            epoch_loss += loss.item()/model.de_num
+
+        # ===================log========================
+        train_loss_log[epoch] = epoch_loss/len(train_loader) 
+        
+        torch.save(model.state_dict(),'./baseline_autoencoder')
+                
+        test_loss = 0          
+        for data in test_loader:
+            auds = data.float()
+            auds = Variable(auds).cuda()
+            # ===================forward=====================
+            output = model(auds)
+            loss = 0
+            for i in range(model.de_num):
+                loss+= criterion(output[i],auds[:,i:i+1,:]) 
+            test_loss+= loss.item()/model.de_num
+
+        test_loss_log[epoch] = test_loss/len(test_loader)  
+
+        if epoch%4==0:
+            print('Repeat:{},  test loss:{:.4f}'.format(k, test_loss_log[k][-1]))
+            ground_truth = auds.cpu().data
+            restored_aud = output[0].cpu().data
+            sf.write('./logs/audio/records/celebrity_baseline_ground_truth_audio'+str(k)+'_'+str(epoch)+'.wav', ground_truth[0,0], fs)
+            sf.write('./logs/audio/records/celebrity_baseline_predicted_audio'+str(k)+'_'+str(epoch)+'.wav', restored_aud[0,0], fs)
+
+    pickle.dump(test_loss_log,open('logs/audio/celebrity_baseline_test_loss_log','wb'))
+    pickle.dump(train_loss_log,open('logs/audio/celebrity_baseline_train_loss_log','wb'))     

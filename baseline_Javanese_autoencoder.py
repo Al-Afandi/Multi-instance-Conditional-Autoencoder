@@ -1,13 +1,19 @@
 import torch
+import torchvision
 from torch import nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
+from torchvision import transforms
+from torchvision.utils import save_image
+from torchvision.datasets import MNIST
 import numpy as np
-import pickle as p
+import pickle 
 import random
-from scipy.io import wavfile
-import scipy.signal as sps
+import matplotlib.pyplot as plt
+import os 
+import soundfile as sf
+import librosa
 
 num_epochs = 20
 
@@ -21,7 +27,7 @@ cond_ch=0
 
 complexity = 1
 
-repeat = 10
+repeat = 6
 
 fs = 18000
 
@@ -29,7 +35,7 @@ length = 4
 
 stride = 4
 
-metadata = np.array(pickle.load(open( "data/javanese_metadata", "rb" )))
+metadata = np.array(pickle.load(open( "javanese_metadata", "rb" )))
 
 train_ind = int(len(metadata)*0.85)
 
