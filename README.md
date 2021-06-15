@@ -1,5 +1,5 @@
 ### Multi-Instance Conditional Autoencoder
-In this repository You can find our code which impelments Multi-instance Conditional Autoencoder appraoch, descird in the paper:
+In this repository, you can find our code which impelments Multi-instance Conditional Autoencoder appraoch, descird in the paper:
 
 *Multi-instance Conditional Autoencoder: a data driven compression model for strongly correlated datasets*
 Jala Al-afandi and András Horváth
