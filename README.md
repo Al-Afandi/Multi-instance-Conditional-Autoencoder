@@ -13,10 +13,12 @@ To run our code You need to install Python and PyTorch.
 ### Running our code
 The repository has  many scripts implenting Multi-instance Conditional Autoencoder over two images datasets (mnist, cifar10) and two audio datasets (celebrity and Javanese). 
 
-### Results illustration
+### Approach illustration
+The figure illustrates Multi-instance autoencoder where one encoder compresses a batch of files together producing a concise latent representation. Although the three decoders receive the same data, each input can be reconstructed from its own decoder.
 
 <img src="" width="500" height="300">
 
+The figure illustrates multi-instance conditional autoencoder where one encoder compresses a batch of files together producing a concise latent representation. Each decoder receives the shared latent representation along with its own spacial latent variables. During training, the model is separating the shared features from the sample based features.
 
 <img src="" width="500" height="300">
 
